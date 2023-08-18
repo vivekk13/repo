@@ -1,0 +1,33 @@
+apiVersion: configsync.gke.io/v1beta1
+kind: RootSync
+metadata:
+  name: root-sync
+  namespace: config-management-system
+spec:
+  sourceType: git
+  sourceFormat: unstructured
+  git:
+    repo: https://gitlab.com/bdo14/global-deployment-pipelines/config-sync/root-sync-repo.git
+    branch: prod
+    dir: cluster-root-config/root
+    auth: token
+    period: 5s
+    secretRef:
+      name: git-creds-bdo14
+  override:
+    resources:
+    - containerName: "reconciler"
+      cpuRequest: "100m"
+      memoryRequest: "200Mi"
+      cpuLimit: "200m"
+      memoryLimit: "400Mi"
+    - containerName: "git-sync"
+      cpuRequest: "50m"
+      memoryRequest: "200Mi"
+      cpuLimit: "150m"
+      memoryLimit: "400Mi"
+    - containerName: "hydration-controller"
+      cpuRequest: "50m"
+      memoryRequest: "100Mi"
+      cpuLimit: "150m"
+      memoryLimit: "200Mi"
